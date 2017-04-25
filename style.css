@@ -1,0 +1,14 @@
+#MainImage{
+    -fx-background-image: url("temporarybackground.gif");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 800 650;
+    -fx-background-position: bottom center;
+    -fx-effect: dropshadow(three-pass-box, black, 30, 0.5, 0, 0); 
+}
+
+#title{
+    -fx-background-image: url("Title.gif");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 400 150;
+    -fx-background-position: top center;
+}
