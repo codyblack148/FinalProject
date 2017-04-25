@@ -11,11 +11,12 @@ public class MoonLander{
 	private float vx,vy,ax,ay, height;
 	private boolean isLanded;
 	private final int MIN_THRUST = 0, MAX_THRUST = 100, MIN_FUEL = 1,DELTA=1;
-	private double directionAngle=0,  fuelLevel = 2000, thrust = 0;
+	private double directionAngle=0,  fuelLevel = 2000, thrust = 0,gravity = 9.8;
+	private int checkThrust = 0;
 	ImageView imageView;
     Image image;
 	Pane layer;
-	Moon moon = new Moon(9.8);
+	
 	
 	public MoonLander(Image image, Pane layer){
 		vx=0;
@@ -33,6 +34,31 @@ public class MoonLander{
 		layer.getChildren().add(imageView);
 		
 		
+	}
+	public MoonLander(Image image, Pane layer,float previousX,
+			float previousY,double previousR,double previousFuel,
+			double previousThrust,float previousVx,float previousVy,
+			float previousAx,float previousAy,float previousHeight){
+		this.image=image;
+		this.layer=layer;
+		this.imageView = new ImageView(image);
+		this.imageView.setFitHeight(75);
+		this.imageView.setFitWidth(75);
+		this.imageView.relocate(previousX, previousY);
+		this.imageView.setRotate(previousR);
+		layer.getChildren().add(imageView);
+		
+		vx = previousVx;
+		vy = previousVy;
+		ax = previousAx;
+		ay = previousAy;
+		height = previousHeight;
+		thrust = previousThrust;
+		xlocation = previousX;
+		ylocation = previousY;
+		fuelLevel = previousFuel;
+		directionAngle = previousR;
+	
 	}
 	public void reset(){
 		fuelLevel=2000;
@@ -73,15 +99,18 @@ public class MoonLander{
 	public void thrust(double thrust){
 		if(fuelLevel < MIN_FUEL){
 			this.ax=0;
-			this.ay=(float) Moon.getGravity();//lander is out of fuel, falls to Tatooine.
+			this.ay=(float) gravity;//lander is out of fuel, falls to Tatooine.
 		} else {
 			this.ax = (float) (thrust/100*45040/(15000+fuelLevel)*Math.sin(directionAngle));//lander is at max thrust, nothing happens.
-			this.ay = (float) (thrust/100*45040/(15000+fuelLevel)*-1*Math.cos(directionAngle)+Moon.getGravity());
+			this.ay = (float) (thrust/100*45040/(15000+fuelLevel)*-1*Math.cos(directionAngle)+gravity);
 			fuelLevel -= thrust/100*5;
 		}
 	}
 	public double getThrust(){
 		return thrust;
+	}
+	public boolean checkThrust(){
+		return thrust > 0;
 	}
 	public float getVelocity(){
 		return (float) Math.sqrt((vx*vx) + (vy*vy));
@@ -107,21 +136,35 @@ public class MoonLander{
 	public float getHeight(){
 		return ylocation;
 	}
-	public void processInput(KeyCode k){
+	public void processInput(KeyCode k, Pane layer){
 		switch(k){
 		case UP: System.out.println("Increase thrust");
 		Timer.reset();
 		thrust +=5;
-		
-		;break;
+		checkThrust++;
+		if(checkThrust==1){
+			layer.getChildren().remove(imageView);
+			this.image = new Image( getClass().getResource("MoonLanderAcc.png").toExternalForm());
+			this.imageView = new ImageView(image);
+			layer.getChildren().add(imageView);
+		}
+		break;
 		case DOWN: System.out.println("Decrease thrust.");
 		Timer.reset();
 		thrust -=5;
+		checkThrust--;
+		if(checkThrust==0){
+			layer.getChildren().remove(imageView);
+			this.image = new Image( getClass().getResource("MoonLander.png").toExternalForm());
+			this.imageView = new ImageView(image);
+			layer.getChildren().add(imageView);
+		}
 		;break;
+		
 		case RIGHT: System.out.println("Rocket rotate right.");
 		this.rotateRight();
 		
-		;break;
+		break;
 		case LEFT: System.out.println("Rocket rotate left.");
 		this.rotateLeft();
 		

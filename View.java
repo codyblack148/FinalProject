@@ -15,22 +15,20 @@ import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.*;
 import java.util.Random;
-
 public class View extends Application {
 	public Stage primaryStage;
 	Image rocketOff = new Image( getClass().getResource("MoonLander.png").toExternalForm());
 	Image rocketOn = new Image( getClass().getResource("MoonLanderAcc.png").toExternalForm());
-	Image target = new Image( getClass().getResource("targettemp.gif").toExternalForm());
 	Image target = new Image( getClass().getResource("targettemp.png").toExternalForm());
 	ImageView image = new ImageView(target);
 	Random rand = new Random();
-
 
 	public void start(Stage primaryStage) {
 		
@@ -45,7 +43,7 @@ public class View extends Application {
 		topGUI.setId("title");
 		MoonLander lander = new MoonLander(rocketOff,root);
 		
-		generateTarget(root);
+		int targetLocation = generateTarget(root);
 		
 		//Top left Vbox of the GUI that displays the stats for the rocket.
 		VBox leftStats = new VBox(12);
@@ -77,7 +75,7 @@ public class View extends Application {
 		
 	scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 		public void handle(KeyEvent e){
-			lander.processInput(e.getCode());
+			lander.processInput(e.getCode(),root);
 		}
 		
 	});
@@ -103,12 +101,13 @@ public class View extends Application {
 	public static void main(String[] args){
 		launch(args); //move?
 	}
-		private void generateTarget(Pane layer){
+	private int generateTarget(Pane layer){
 		int x = rand.nextInt(601) + 100;
 		image.setFitHeight(100);
 		image.setFitWidth(100);
 		image.relocate(x, 650);
 		layer.getChildren().add(image);
+		return x;
 	}
 }
 
