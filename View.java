@@ -20,12 +20,16 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import javafx.animation.*;
+import java.util.Random;
+
 public class View extends Application {
 	public Stage primaryStage;
 	Image rocketOff = new Image( getClass().getResource("MoonLander.png").toExternalForm());
 	Image rocketOn = new Image( getClass().getResource("MoonLanderAcc.png").toExternalForm());
 	Image target = new Image( getClass().getResource("targettemp.gif").toExternalForm());
-
+	Image target = new Image( getClass().getResource("targettemp.png").toExternalForm());
+	ImageView image = new ImageView(target);
+	Random rand = new Random();
 
 
 	public void start(Stage primaryStage) {
@@ -40,6 +44,8 @@ public class View extends Application {
 		root.setTop(topGUI);
 		topGUI.setId("title");
 		MoonLander lander = new MoonLander(rocketOff,root);
+		
+		generateTarget(root);
 		
 		//Top left Vbox of the GUI that displays the stats for the rocket.
 		VBox leftStats = new VBox(12);
@@ -96,6 +102,13 @@ public class View extends Application {
 	}
 	public static void main(String[] args){
 		launch(args); //move?
+	}
+		private void generateTarget(Pane layer){
+		int x = rand.nextInt(601) + 100;
+		image.setFitHeight(100);
+		image.setFitWidth(100);
+		image.relocate(x, 650);
+		layer.getChildren().add(image);
 	}
 }
 
