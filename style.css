@@ -12,3 +12,10 @@
     -fx-background-size: 400 150;
     -fx-background-position: top center;
 }
+
+#Vader{
+    -fx-background-image: url("Vader.gif");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 400 363;
+    -fx-background-position: center center;
+}
