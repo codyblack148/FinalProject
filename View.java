@@ -22,6 +22,7 @@ import javafx.stage.Stage;
 import javafx.animation.*;
 import java.io.File;
 import java.util.Random;
+import javafx.embed.swing.JFXPanel;
 
 public class View extends Application {
 	public Stage stage;
@@ -30,6 +31,9 @@ public class View extends Application {
 	ImageView image = new ImageView(target);
 	Random rand = new Random();
 	int targetLocation;
+	
+	private MediaPlayer audioPlayer;
+	private Media audio;
 	
 	
 	public void start(Stage primaryStage) {
@@ -57,6 +61,12 @@ public class View extends Application {
 			});
 		primaryStage.setTitle("Tatooine Lander Start Screen");
 		primaryStage.setScene(startScreen);
+		
+		File file = new File("RebellionsAreBuiltonHope.mp3");
+		audio = new Media(file.toURI().toString());
+		audioPlayer = new MediaPlayer(audio);
+		audioPlayer.play();
+		
 		primaryStage.show();
 		// startGame(primaryStage);
        }
@@ -238,6 +248,7 @@ void startGame(Stage stage){
    btn2.setOnAction((event) -> {
 	    System.out.println("Quit");
 	    stage.close();
+	    System.exit(0);
 
 	});
    btn3.setOnAction((event) -> {
@@ -246,6 +257,7 @@ void startGame(Stage stage){
    btn4.setOnAction((event) -> {
 	    System.out.println("Quit");
 	    stage.close();
+	    System.exit(0);
 
 	});
    btn5.setOnAction((event) -> {
@@ -254,6 +266,7 @@ void startGame(Stage stage){
    btn6.setOnAction((event) -> {
 	    System.out.println("Quit");
 	    stage.close();
+	    System.exit(0);
 
 	});
 }
