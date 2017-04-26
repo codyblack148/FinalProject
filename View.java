@@ -1,4 +1,5 @@
 import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
 import javafx.application.Application;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.value.ObservableValue;
@@ -32,11 +33,35 @@ public class View extends Application {
 	
 	
 	public void start(Stage primaryStage) {
-		
-       startGame(primaryStage);
+		Pane startPane = new Pane();
+		Scene startScreen = new Scene(startPane,800,1186);
+		startScreen.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
+		startPane.setId("LastJedi"); //add what we want to be in the bg of screen.
+		Button sbtn1 = new Button("Begin Game");
+		Button sbtn2 = new Button("Cancel");
+		Label startHeader = new Label("Tatooine Lander - A Moon Landing Simulator\n Designed by: Cody Black and Chris Marek.");
+		startHeader.setFont(new Font("Arial", 30));
+		startHeader.setTextFill(Color.DEEPSKYBLUE);
+		startHeader.setTranslateX(120);
+		sbtn1.setTranslateX(150);
+		sbtn1.setTranslateY(750);
+		sbtn2.setTranslateX(600);
+		sbtn2.setTranslateY(750); 
+		startPane.getChildren().addAll(sbtn1,sbtn2,startHeader);
+		   sbtn1.setOnAction((event) -> {
+			   startGame(primaryStage);
+			});
+		   sbtn2.setOnAction((event) -> {
+			    System.out.println("Quit");
+			    primaryStage.close();
+			});
+		primaryStage.setTitle("Tatooine Lander Start Screen");
+		primaryStage.setScene(startScreen);
+		primaryStage.show();
+		// startGame(primaryStage);
        }
 	public static void main(String[] args){
-		launch(args); //move?
+		launch(args);
 	}
 
 	private int generateTarget(Pane layer){
@@ -206,6 +231,7 @@ void startGame(Stage stage){
 
     };
    gameLoop.start();
+   
    btn1.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
 	});
