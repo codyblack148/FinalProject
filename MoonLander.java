@@ -20,20 +20,21 @@ public class MoonLander{
 	private float xlocation = 350, ylocation = 150;
 	private float vx,vy,ax,ay, height;
 	private final int MIN_THRUST = 1, MAX_THRUST = 100, MIN_FUEL = 1,DELTA=1;
-	private double directionAngle=0,  fuelLevel = 2000, thrust = 0,gravity = 1;
+	private double directionAngle=0,  fuelLevel = 2000, thrust = 0,gravity = 1.6;
 	ImageView imageView;
     Image image;
 	Pane layer;
 	float timeAcc;
 	float timeVel;
-	public TimeTracker accTimer = new TimeTracker(1,1);
+	private landerTimer accTimer = new landerTimer(1,1);
 	
 	
 	public MoonLander(Image image, Pane layer){
-		vx=0;
-		vy=0;
+		accTimer.reset();
 		ax=0;
 		ay=0;
+		vx=0;
+		vy=0;
 		height = 650;
 		xlocation = 350;
 		ylocation = 150;
@@ -73,14 +74,17 @@ public class MoonLander{
 	
 	}
 	public void reset(){
-		vx=0;
-		vy=0;
-		ax=0;
-		ay=0;
-		height = 650;
-		xlocation = 350;
-		ylocation = 150;
+		this.accTimer.reset();
+		this.fuelLevel=2000;
+		this.ax=0;
+		this.ay=0;
+		this.vx=0;
+		this.vy=0;
+		this.height = 650;
+		this.xlocation = 350;
+		this.ylocation = 150;
 		this.imageView.relocate(350, 150);
+		
 		
 		
 		
@@ -96,14 +100,13 @@ public class MoonLander{
 	public void move(){
 		//xlocation;
 		
-		timeAcc = accTimer.getTime()/1000;
 		ylocation += vy;
-		xlocation += -vx;
+		xlocation += vx;
 		if(xlocation<1){
 			xlocation=0;
 		}
-	    if(xlocation>750){
-			xlocation=749;
+	    if(xlocation>725){
+			xlocation=724;
 		}
 		if(ylocation<1){
 			ylocation = 1;
@@ -131,8 +134,8 @@ public class MoonLander{
 			this.ax=0;
 			this.ay=(float) -gravity;//lander is out of fuel, falls to Tatooine.
 		} else {
-			this.ax = (float) (thrust*Math.sin(Math.toRadians(directionAngle))/100*45040/(15000+fuelLevel)/5);//lander is at max thrust, nothing happens.
-			this.ay = (float) ((thrust/100*45040/(15000+fuelLevel)*Math.cos(Math.toRadians(directionAngle))-gravity)/5);
+			ax = (float) (thrust*Math.sin(Math.toRadians(directionAngle))/100*45040/(15000+fuelLevel)/100);//lander is at max thrust, nothing happens.
+			ay = (float) ((thrust/100*45040/(15000+fuelLevel)*Math.cos(Math.toRadians(directionAngle))-gravity)/10);
 			fuelLevel -= thrust/100*5;
 		}
 	}
@@ -143,9 +146,8 @@ public class MoonLander{
 		return (float) Math.sqrt((vx*vx) + (vy*vy));
 	}
 	public void changeVelocity(){
-		timeVel = accTimer.getTime()/1000;
-		vx = -vx - ax*(timeVel);
-		vy = -vy - ay*(timeVel);
+		vx = vx + ax;
+		vy = -vy - ay*(accTimer.getTime()/1000);
 		
 	}
 	public double getFuel(){
@@ -155,9 +157,7 @@ public class MoonLander{
 		return directionAngle;
 	}
 	public void setDirectionAngle(){
-		if(directionAngle<360){
-			this.directionAngle = directionAngle;
-		} else {
+		if(! (directionAngle<360)){
 			this.directionAngle = Math.abs(directionAngle % 360);
 		}
 	}

@@ -33,6 +33,7 @@ public class View extends Application {
 	ImageView image = new ImageView(target);
 	Random rand = new Random();
 	int targetLocation;
+	private TimeTracker lTime = new TimeTracker(1,1);
 	
 	private MediaPlayer audioPlayer;
 	private Media audio;
@@ -95,12 +96,13 @@ void removeTarget(Pane layer, Node target){
 		layer.getChildren().remove(target);
 	}
 	void cleanup(AnimationTimer a, MoonLander lander){
-		lander.reset();
-		a.stop();
+		
 		
 	}
 void restart(Stage stage,AnimationTimer a,MoonLander lander){
-	cleanup(a,lander);
+	lander.reset();
+	a.stop();
+	lTime.reset();
 	startGame(stage);
 }
 void startGame(Stage stage){
@@ -215,26 +217,29 @@ void startGame(Stage stage){
         	l2.setText("Velocity: "+ lander.getVelocity());
         	l3.setText("Thrust %: "+ lander.getThrust());
         	l4.setText("Direction Angle: "+ lander.getDirectionAngle());
-        	//l5.setText("Time Elapsed: "+timer.getTime());
+        	l5.setText("Time Elapsed: "+lTime.getTime()/1000 + "s");
         	l6.setText("Height: " + lander.getHeight());
         	
         	lander.updateLocation(lander.getX(), lander.getY(), lander.getDirectionAngle());
         	lander.move();
         	lander.thrust(lander.getThrust());
+        	float xCheck = lander.getX();
         	
         	if(lander.getY()>650){ //Hits the Ground
         		
-        		if(lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345){//Check to see if it Crashed (check Velocity and angles)
+        		if((lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345) && lander.getVelocity()<4){//Check to see if it Crashed (check Velocity and angles)
         			System.out.println(targetLocation);
-        			if((targetLocation - 75) < lander.getX() && lander.getX() < (targetLocation+75)){ //Is it on the target
+        			if((targetLocation - 75) < xCheck || xCheck > (targetLocation+75)){ //Is it on the target
         				
                 			System.out.println("Hit the Target!");
                 			stage.setScene(scene2);
                 			stage.show();
-                		}
-        			System.out.println("You landed.");
-        			stage.setScene(scene3);
-        			stage.show();
+                	}
+        			else{
+        				System.out.println("You landed.");
+        				stage.setScene(scene3);
+        				stage.show();
+        			}
         		}
         		else{
         			System.out.println("You Crashed.");
@@ -253,6 +258,7 @@ void startGame(Stage stage){
    
    btn1.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
+	   
 	});
    btn2.setOnAction((event) -> {
 	    System.out.println("Quit");
@@ -262,6 +268,7 @@ void startGame(Stage stage){
 	});
    btn3.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
+
 	});
    btn4.setOnAction((event) -> {
 	    System.out.println("Quit");
@@ -271,6 +278,7 @@ void startGame(Stage stage){
 	});
    btn5.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
+
 	});
    btn6.setOnAction((event) -> {
 	    System.out.println("Quit");
@@ -278,7 +286,4 @@ void startGame(Stage stage){
 	    System.exit(0);
 
 	});
-}
-	
-}
-
+}}
