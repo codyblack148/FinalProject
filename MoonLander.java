@@ -20,7 +20,7 @@ public class MoonLander{
 	private float xlocation = 350, ylocation = 150;
 	private float vx,vy,ax,ay, height;
 	private final int MIN_THRUST = 1, MAX_THRUST = 100, MIN_FUEL = 1,DELTA=1;
-	private double directionAngle=0,  fuelLevel = 2000, thrust = 0,gravity = 1.6;
+	private double directionAngle=0,  fuelLevel = 2000, thrust = 0,gravity = 1;
 	ImageView imageView;
     Image image;
 	Pane layer;
@@ -97,13 +97,13 @@ public class MoonLander{
 		//xlocation;
 		
 		timeAcc = accTimer.getTime()/1000;
-		ylocation += vy*timeAcc;
-		xlocation += vx*timeAcc;
+		ylocation += vy;
+		xlocation += -vx;
 		if(xlocation<1){
 			xlocation=0;
 		}
-	    if(xlocation>800){
-			xlocation=799;
+	    if(xlocation>750){
+			xlocation=749;
 		}
 		if(ylocation<1){
 			ylocation = 1;
@@ -131,8 +131,8 @@ public class MoonLander{
 			this.ax=0;
 			this.ay=(float) -gravity;//lander is out of fuel, falls to Tatooine.
 		} else {
-			this.ax = (float) (thrust/100*45040/(15000+fuelLevel)*Math.sin(directionAngle));//lander is at max thrust, nothing happens.
-			this.ay = (float) (thrust/100*45040/(15000+fuelLevel)*-1*Math.cos(directionAngle)+gravity);
+			this.ax = (float) (thrust*Math.sin(Math.toRadians(directionAngle))/100*45040/(15000+fuelLevel)/5);//lander is at max thrust, nothing happens.
+			this.ay = (float) ((thrust/100*45040/(15000+fuelLevel)*Math.cos(Math.toRadians(directionAngle))-gravity)/5);
 			fuelLevel -= thrust/100*5;
 		}
 	}
@@ -144,7 +144,7 @@ public class MoonLander{
 	}
 	public void changeVelocity(){
 		timeVel = accTimer.getTime()/1000;
-		vx = vx + ax*(timeVel);
+		vx = -vx - ax*(timeVel);
 		vy = -vy - ay*(timeVel);
 		
 	}
@@ -168,20 +168,23 @@ public class MoonLander{
 		switch(k){
 		case UP: System.out.println("Increase thrust");
 		accTimer.reset();
-		thrust +=5;
-		break;
+		if(! (thrust>=MAX_THRUST || fuelLevel<MIN_FUEL)){
+			thrust +=5;
+		}
+		
+		;break;
 		case DOWN: System.out.println("Decrease thrust.");
 		accTimer.reset();
 		if(! (thrust < MIN_THRUST)){
 			thrust -=5;
-			}
+		}
 		
 		;break;
 		
 		case RIGHT: System.out.println("Rocket rotate right.");
 		this.rotateRight();
 		
-		break;
+		;break;
 		case LEFT: System.out.println("Rocket rotate left.");
 		this.rotateLeft();
 		
@@ -222,6 +225,7 @@ public class MoonLander{
 		}
 		
 		changeVelocity();
+		move();
 		imageView.relocate(x, y);
 		imageView.setRotate(r);
 	}
