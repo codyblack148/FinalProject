@@ -24,6 +24,8 @@ import java.io.File;
 import java.util.Random;
 import javafx.embed.swing.JFXPanel;
 
+import javafx.util.Duration;
+
 public class View extends Application {
 	public Stage stage;
 	Image rocketOn = new Image( getClass().getResource("MoonLanderAcc.png").toExternalForm());
@@ -65,6 +67,13 @@ public class View extends Application {
 		File file = new File("RebellionsAreBuiltonHope.mp3");
 		audio = new Media(file.toURI().toString());
 		audioPlayer = new MediaPlayer(audio);
+		//Makes it Run COntinuasly.
+		audioPlayer.setOnEndOfMedia(new Runnable() {
+       			public void run() {
+         	audioPlayer.seek(Duration.ZERO);
+       		}
+   		});
+		
 		audioPlayer.play();
 		
 		primaryStage.show();
