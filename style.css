@@ -19,3 +19,15 @@
     -fx-background-size: 400 363;
     -fx-background-position: center center;
 }
+#Finn{
+    -fx-background-image: url("Finn.gif");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 500 206;
+    -fx-background-position: center center;
+}
+#Luke{
+    -fx-background-image: url("Luke.gif");
+    -fx-background-repeat: stretch;   
+    -fx-background-size: 360 240;
+    -fx-background-position: center center;
+}
