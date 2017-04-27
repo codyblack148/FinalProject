@@ -1,9 +1,7 @@
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
 import javafx.application.Application;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -73,7 +71,8 @@ public class View extends Application {
 		
 		primaryStage.show();
 		// startGame(primaryStage);
-       }
+	}
+	
 	public static void main(String[] args){
 		launch(args);
 	}
@@ -86,32 +85,29 @@ public class View extends Application {
 		layer.getChildren().add(image);
 		return x;
 	}
-void removeTarget(Pane layer, Node target){
-		layer.getChildren().remove(target);
-	}
-
-void restart(Stage stage,AnimationTimer a,MoonLander lander){
-	lander.reset();
-	a.stop();
-	lTime.reset();
-	startGame(stage);
-}
-void startGame(Stage stage){
-
-	/* 
-	 * Main game scene and initialization.
-	 */
 	
-	BorderPane root = new BorderPane();
-	Scene scene = new Scene(root,800,800);
-	scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
-	root.setId("MainImage");
-	Button pause = new Button("Pause");
-	root.setBottom(pause);
-	BorderPane topGUI = new BorderPane();
-	root.setTop(topGUI);
-	MoonLander lander = new MoonLander(rocketOn,root);
-	targetLocation = generateTarget(root);
+	private void restart(Stage stage,AnimationTimer a,MoonLander lander){
+		lander.reset();
+		a.stop();
+		lTime.reset();
+		startGame(stage);
+	}
+	private void startGame(Stage stage){
+
+		/* 
+		 * Main game scene and initialization.
+		 */
+	
+		BorderPane root = new BorderPane();
+		Scene scene = new Scene(root,800,800);
+		scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
+		root.setId("MainImage");
+		Button pause = new Button("Pause");
+		root.setBottom(pause);
+		BorderPane topGUI = new BorderPane();
+		root.setTop(topGUI);
+		MoonLander lander = new MoonLander(rocketOn,root);
+		targetLocation = generateTarget(root);
 	
 			//Top right Vbox of the GUI, shows all statistics.
 			VBox rightStats = new VBox(5);
@@ -195,100 +191,100 @@ void startGame(Stage stage){
 	/* 
 	 * Game animation loop initialization.
 	 */
-	AnimationTimer gameLoop = new AnimationTimer() {
-
-        @Override
-        public void handle(long now) {
-        	
-        	l1.setText("Fuel: "+ lander.getFuel());
-        	l2.setText("Velocity: "+ lander.getVelocity());
-        	l3.setText("Thrust %: "+ lander.getThrust());
-        	l4.setText("Direction Angle: "+ lander.getDirectionAngle());
-        	l5.setText("Time Elapsed: "+lTime.getTime()/1000);
-        	l6.setText("Height: " + lander.getHeight());
-        	
-        	lander.updateLocation(lander.getX(), lander.getY(), lander.getDirectionAngle());
-        	lander.move();
-        	lander.thrust(lander.getThrust());
-        	float xCheck = lander.getX();
-        	
-if(lander.getY()>650){ //Hits the Ground
-        		
-        		if((lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345) && lander.getVelocity()<4){//Check to see if it Crashed (check Velocity and angles)
-        			System.out.println(targetLocation);
-        			if((targetLocation - 75) < xCheck || xCheck > (targetLocation+75)){ //Is it on the target
-        				
-                			System.out.println("Hit the Target!");
-                			stage.setScene(scene2);
-                			stage.show();
-                	}
-        			else{
-        				System.out.println("You landed.");
-        				stage.setScene(scene3);
-        				stage.show();
-        			}
-        		}
-        		else{
-        			System.out.println("You Crashed.");
-        			stage.setScene(scene4);
-        			stage.show();
-        		}
-        		
-        		stop();
-        	}
-        	
-
-        }
-
-    };
-   gameLoop.start();
-   
-   
-   btn1.setOnAction((event) -> {
-	   restart(stage, gameLoop, lander);
-	});
-   btn2.setOnAction((event) -> {
-	    System.out.println("Quit");
-	    stage.close();
-	    System.exit(0);
-
-	});
-   btn3.setOnAction((event) -> {
-	   restart(stage, gameLoop, lander);
-	});
-   btn4.setOnAction((event) -> {
-	    System.out.println("Quit");
-	    stage.close();
-	    System.exit(0);
-
-	});
-   btn5.setOnAction((event) -> {
-	   restart(stage, gameLoop, lander);
-	});
-   btn6.setOnAction((event) -> {
-	    System.out.println("Quit");
-	    stage.close();
-	    System.exit(0);
-
-	});
-
-   pause.setOnAction((event) -> {
-	    System.out.println("Pause");
-	    if(pauseCheck == 0){
-	    	gameLoop.stop();
-	    	pauseCheck++;
-	    	tempLanderTime = lander.accTimer.getTime();
-	    	tempGameTime = lTime.getTime();
-	    	
-	    }
-	    else {
-	    	lander.accTimer.setTime(tempLanderTime);
-	    	lTime.setTime(tempGameTime);
-	    	gameLoop.start();
-	    	pauseCheck--;
-	    }
-	    
-	});
-}
+		AnimationTimer gameLoop = new AnimationTimer() {
+	
+	        @Override
+	        public void handle(long now) {
+	        	
+	        	l1.setText("Fuel: "+ lander.getFuel());
+	        	l2.setText("Velocity: "+ lander.getVelocity());
+	        	l3.setText("Thrust %: "+ lander.getThrust());
+	        	l4.setText("Direction Angle: "+ lander.getDirectionAngle());
+	        	l5.setText("Time Elapsed: "+lTime.getTime()/1000);
+	        	l6.setText("Height: " + lander.getHeight());
+	        	
+	        	lander.updateLocation(lander.getX(), lander.getY(), lander.getDirectionAngle());
+	        	lander.move();
+	        	lander.thrust(lander.getThrust());
+	        	float xCheck = lander.getX();
+	        	
+	        	if(lander.getY()>650){ //Hits the Ground
+	        		
+	        		if((lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345) && lander.getVelocity()<7){//Check to see if it Crashed (check Velocity and angles)
+	        			System.out.println(targetLocation);
+	        			if((targetLocation - 75) < xCheck || xCheck > (targetLocation+75)){ //Is it on the target
+	        				
+	                			System.out.println("Hit the Target!");
+	                			stage.setScene(scene2);
+	                			stage.show();
+	                	}
+	        			else{
+	        				System.out.println("You landed.");
+	        				stage.setScene(scene3);
+	        				stage.show();
+	        			}
+	        		}
+	        		else{
+	        			System.out.println("You Crashed.");
+	        			stage.setScene(scene4);
+	        			stage.show();
+	        		}
+	        		
+	        		stop();
+	        	}
+	        	
+	
+	        }
+	
+	    };
+	   gameLoop.start();
+	   
+	   
+	   btn1.setOnAction((event) -> {
+		   restart(stage, gameLoop, lander);
+		});
+	   btn2.setOnAction((event) -> {
+		    System.out.println("Quit");
+		    stage.close();
+		    System.exit(0);
+	
+		});
+	   btn3.setOnAction((event) -> {
+		   restart(stage, gameLoop, lander);
+		});
+	   btn4.setOnAction((event) -> {
+		    System.out.println("Quit");
+		    stage.close();
+		    System.exit(0);
+	
+		});
+	   btn5.setOnAction((event) -> {
+		   restart(stage, gameLoop, lander);
+		});
+	   btn6.setOnAction((event) -> {
+		    System.out.println("Quit");
+		    stage.close();
+		    System.exit(0);
+	
+		});
+	
+	   pause.setOnAction((event) -> {
+		    System.out.println("Pause");
+		    if(pauseCheck == 0){
+		    	gameLoop.stop();
+		    	pauseCheck++;
+		    	tempLanderTime = lander.accTimer.getTime();
+		    	tempGameTime = lTime.getTime();
+		    	
+		    }
+		    else {
+		    	lander.accTimer.setTime(tempLanderTime);
+		    	lTime.setTime(tempGameTime);
+		    	gameLoop.start();
+		    	pauseCheck--;
+		    }
+		    
+		});
+	}
 	
 }
