@@ -19,23 +19,40 @@ import java.util.Random;
 
 import javafx.util.Duration;
 
+/**
+ * @author Cody Black  cblack4@cbu.edu
+ * @author Chris Marek jmarek@cbu.edu
+ */
 public class View extends Application {
 	public Stage stage;
+	
+	/**
+	 * Declarations for variables. Both Images are for the MoonLander and the target to be hit.
+	 * Random variable will be utilized to randomly generate target location. The Media variables
+	 * are utilized to play background music. The pause check and temp times are used exclusively
+	 * for the pause button. DO NOT UTILIZE THOSE VARIABLES ELSEWHERE. TimeTracker object
+	 * is declared and tracks time for the time elapsed.
+	 * 
+	 */
 	Image rocketOn = new Image( getClass().getResource("LanderFlames.png").toExternalForm());
 	Image target = new Image( getClass().getResource("stormTrooperTarget.png").toExternalForm());
 	ImageView image = new ImageView(target);
 	Random rand = new Random();
 	int targetLocation;
-	
 	private MediaPlayer audioPlayer;
 	private Media audio;
-	int pauseCheck = 0; //Pause check and temp time are used for the pause button. DO NOT CHANGE THESE OR USE THEM ELSEWHERE.
+	int pauseCheck = 0; 
 	float tempLanderTime;
 	float tempGameTime;
 	private TimeTracker lTime = new TimeTracker(1,1);
 	
 	
+	/* (non-Javadoc)
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
 	public void start(Stage primaryStage) {
+		
+		
 		Pane startPane = new Pane();
 		Scene startScreen = new Scene(startPane,800,800);
 		startScreen.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
@@ -73,10 +90,17 @@ public class View extends Application {
 		// startGame(primaryStage);
 	}
 	
+	/**
+	 * @param args Main args.
+	 */
 	public static void main(String[] args){
 		launch(args);
 	}
 
+	/**Method used for randomly generating and placing target on screen.
+	 * @param layer Pane layer that the target will be appended to.
+	 * @return Target location.
+	 */
 	private int generateTarget(Pane layer){
 		int x = rand.nextInt(601) + 100;
 		image.setFitHeight(100);
@@ -86,18 +110,33 @@ public class View extends Application {
 		return x;
 	}
 	
+	/**Restarts the game by resetting the MoonLander, stopping the AnimationTimer, resetting
+	 * the timer, and calling startGame.
+	 * @param stage Stage for which game is being restarted.
+	 * @param a AnimationTimer object that is being stopped.
+	 * @param lander MoonLander object to be reset.
+	 */
 	private void restart(Stage stage,AnimationTimer a,MoonLander lander){
 		lander.reset();
 		a.stop();
 		lTime.reset();
 		startGame(stage);
 	}
+	/**Contains all the code to set up all scenes for the game, as well as the AnimationTimer
+	 * that runs the game.
+	 * @param stage Stage which is to be utilized for the game.
+	 */
 	private void startGame(Stage stage){
 
 		/* 
-		 * Main game scene and initialization.
+		 * Setup for the root BorderPane of the game, the background image, and the pause button.
+		 * A second BorderPane is put into the top of the root BorderPane .
+		 * The MoonLander and target are both initialized here and added
+		 * to the root. Another BorderPane is put into the top of the root, and then
+		 * a VBox is added to the right side of that BorderPane. This allows all of the 
+		 * labels for the statistics to be put into the top right corner of the screen inside
+		 * of the VBox.
 		 */
-	
 		BorderPane root = new BorderPane();
 		Scene scene = new Scene(root,800,800);
 		scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
@@ -109,7 +148,7 @@ public class View extends Application {
 		MoonLander lander = new MoonLander(rocketOn,root);
 		targetLocation = generateTarget(root);
 	
-			//Top right Vbox of the GUI, shows all statistics.
+		
 			VBox rightStats = new VBox(5);
 			rightStats.setPrefWidth(200);
 			rightStats.setPrefHeight(150);
@@ -128,7 +167,11 @@ public class View extends Application {
 			l6.setTextFill(Color.WHITE);
 			rightStats.getChildren().addAll(l1,l2,l3,l4,l5,l6);
 			topGUI.setRight(rightStats);
-			
+		
+			/* 
+			 * Listener for KeyEvents. Key events are passed to the processInput method
+			 * of the MoonLander class to be further processed.
+			 */	
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 			public void handle(KeyEvent e){
 				lander.processInput(e.getCode(),root);
@@ -137,7 +180,6 @@ public class View extends Application {
 			
 		});
 		
-		//TimeTracker timer = new TimeTracker();
 			
 			stage.setScene(scene);
 			stage.show();
@@ -193,9 +235,16 @@ public class View extends Application {
 	 */
 		AnimationTimer gameLoop = new AnimationTimer() {
 	
+	        /* (non-Javadoc)
+	         * @see javafx.animation.AnimationTimer#handle(long)
+	         */
 	        @Override
 	        public void handle(long now) {
 	        	
+	        	/* 
+				 * All 6 labels are updated in real time by calling the MoonLander getters.
+				 * The timer is updated from the TimeTracker object initialized in this class.
+				 */
 	        	l1.setText("Fuel: "+ lander.getFuel());
 	        	l2.setText("Velocity: "+ lander.getVelocity());
 	        	l3.setText("Thrust %: "+ lander.getThrust());
@@ -203,11 +252,20 @@ public class View extends Application {
 	        	l5.setText("Time Elapsed: "+lTime.getTime()/1000);
 	        	l6.setText("Height: " + lander.getHeight());
 	        	
+	        	/* 
+				 * MoonLander location, movements, and thrust are calculated according to user
+				 * input and physics equations. xCheck is used to compare the MoonLander
+				 * location to the location of the target.
+				 */
 	        	lander.updateLocation(lander.getX(), lander.getY(), lander.getDirectionAngle());
 	        	lander.move();
 	        	lander.thrust(lander.getThrust());
 	        	float xCheck = lander.getX();
 	        	
+	        	/* 
+				 * Nested if statements calculate whether the MoonLander lands on the target
+				 * lands but missed the target, or crashes. Scenes are called accordingly.
+				 */
 	        	if(lander.getY()>650){ //Hits the Ground
 	        		
 	        		if((lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345) && lander.getVelocity()<7){//Check to see if it Crashed (check Velocity and angles)
@@ -240,6 +298,11 @@ public class View extends Application {
 	   gameLoop.start();
 	   
 	   
+		/* 
+		 * Set on action calls for all of the buttons in each scene called for the end games.
+		 * First button for each scene restarts the game, second button exits the game.
+		 * The last button contains the logic for pausing the game.
+		 */
 	   btn1.setOnAction((event) -> {
 		   restart(stage, gameLoop, lander);
 		});
