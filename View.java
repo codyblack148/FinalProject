@@ -270,7 +270,7 @@ public class View extends Application {
 	        		
 	        		if((lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345) && lander.getVelocity()<7){//Check to see if it Crashed (check Velocity and angles)
 	        			System.out.println(targetLocation);
-	        			if((targetLocation - 75) < xCheck || xCheck > (targetLocation+75)){ //Is it on the target
+	        			if((targetLocation - 75) < xCheck && xCheck < (targetLocation+75)){ //Is it on the target
 	        				
 	                			System.out.println("Hit the Target!");
 	                			stage.setScene(scene2);
