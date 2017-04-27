@@ -10,7 +10,7 @@ public landerTimer(int period, int delay){
 	TimerTask task = new TimerTask(){
 		public void run(){
 			t++;
-			//System.out.println(t);
+			System.out.println(t);
 		}
 	};
 	timer.scheduleAtFixedRate(task, delay, period);
@@ -20,5 +20,8 @@ public void reset(){
 }
 public float getTime(){
 	return t;
+}
+public void setTime(float time){
+	t = time;
 }
 }

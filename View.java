@@ -1,8 +1,6 @@
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.application.Application;
-import javafx.beans.property.SimpleDoubleProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.Node;
@@ -13,48 +11,44 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
-import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.animation.*;
 import java.io.File;
 import java.util.Random;
-import javafx.embed.swing.JFXPanel;
 
 import javafx.util.Duration;
 
 public class View extends Application {
 	public Stage stage;
-	Image rocketOn = new Image( getClass().getResource("MoonLanderAcc.png").toExternalForm());
-	Image target = new Image( getClass().getResource("targettemp.png").toExternalForm());
+	Image rocketOn = new Image( getClass().getResource("LanderFlames.png").toExternalForm());
+	Image target = new Image( getClass().getResource("stormTrooperTarget.png").toExternalForm());
 	ImageView image = new ImageView(target);
 	Random rand = new Random();
 	int targetLocation;
-	private TimeTracker lTime = new TimeTracker(1,1);
 	
 	private MediaPlayer audioPlayer;
 	private Media audio;
+	int pauseCheck = 0; //Pause check and temp time are used for the pause button. DO NOT CHANGE THESE OR USE THEM ELSEWHERE.
+	float tempLanderTime;
+	float tempGameTime;
+	private TimeTracker lTime = new TimeTracker(1,1);
 	
 	
 	public void start(Stage primaryStage) {
 		Pane startPane = new Pane();
-		Scene startScreen = new Scene(startPane,800,1186);
+		Scene startScreen = new Scene(startPane,800,800);
 		startScreen.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 		startPane.setId("LastJedi"); //add what we want to be in the bg of screen.
 		Button sbtn1 = new Button("Begin Game");
 		Button sbtn2 = new Button("Cancel");
-		Label startHeader = new Label("Tatooine Lander - A Moon Landing Simulator\n Designed by: Cody Black and Chris Marek.");
-		startHeader.setFont(new Font("Arial", 30));
-		startHeader.setTextFill(Color.DEEPSKYBLUE);
-		startHeader.setTranslateX(120);
 		sbtn1.setTranslateX(150);
 		sbtn1.setTranslateY(750);
 		sbtn2.setTranslateX(600);
 		sbtn2.setTranslateY(750); 
-		startPane.getChildren().addAll(sbtn1,sbtn2,startHeader);
+		startPane.getChildren().addAll(sbtn1,sbtn2);
 		   sbtn1.setOnAction((event) -> {
 			   startGame(primaryStage);
 			});
@@ -95,10 +89,7 @@ public class View extends Application {
 void removeTarget(Pane layer, Node target){
 		layer.getChildren().remove(target);
 	}
-	void cleanup(AnimationTimer a, MoonLander lander){
-		
-		
-	}
+
 void restart(Stage stage,AnimationTimer a,MoonLander lander){
 	lander.reset();
 	a.stop();
@@ -115,16 +106,18 @@ void startGame(Stage stage){
 	Scene scene = new Scene(root,800,800);
 	scene.getStylesheets().addAll(this.getClass().getResource("style.css").toExternalForm());
 	root.setId("MainImage");
+	Button pause = new Button("Pause");
+	root.setBottom(pause);
 	BorderPane topGUI = new BorderPane();
 	root.setTop(topGUI);
-	topGUI.setId("title");
 	MoonLander lander = new MoonLander(rocketOn,root);
 	targetLocation = generateTarget(root);
-	//Top left Vbox of the GUI that displays the stats for the rocket.
-			VBox leftStats = new VBox(12);
-			leftStats.setPrefWidth(200);
-			leftStats.setPrefHeight(150);
-			leftStats.setStyle("-fx-background-color: black;");
+	
+			//Top right Vbox of the GUI, shows all statistics.
+			VBox rightStats = new VBox(5);
+			rightStats.setPrefWidth(200);
+			rightStats.setPrefHeight(150);
+			rightStats.setStyle("-fx-background-color: black");
 			Label l1 = new Label("Fuel: ");
 			Label l2 = new Label("Velocity: ");
 			Label l3 = new Label("Thrust %: ");
@@ -133,27 +126,21 @@ void startGame(Stage stage){
 			l2.setTextFill(Color.WHITE);
 			l3.setTextFill(Color.WHITE);
 			l4.setTextFill(Color.WHITE);
-			leftStats.getChildren().addAll(l1,l2,l3,l4);
-			topGUI.setLeft(leftStats);
-			//Top right Vbox of the GUI, shows height in meters and elapsed time.
-			VBox rightStats = new VBox(12);
-			rightStats.setPrefWidth(200);
-			rightStats.setPrefHeight(150);
-			rightStats.setStyle("-fx-background-color: black");
 			Label l5 = new Label("Time Elapsed: ");
 			Label l6 = new Label("Height: ");
 			l5.setTextFill(Color.WHITE);
 			l6.setTextFill(Color.WHITE);
-			rightStats.getChildren().addAll(l5,l6);
+			rightStats.getChildren().addAll(l1,l2,l3,l4,l5,l6);
 			topGUI.setRight(rightStats);
 			
 		scene.setOnKeyPressed(new EventHandler<KeyEvent>(){
 			public void handle(KeyEvent e){
 				lander.processInput(e.getCode(),root);
-			
+				
 			}
 			
 		});
+		
 		//TimeTracker timer = new TimeTracker();
 			
 			stage.setScene(scene);
@@ -163,44 +150,44 @@ void startGame(Stage stage){
 			 * Win, play again or quit scene setup. Initialization located in AnimationTimer.
 			 */
 			Pane winPlayAgain = new Pane();
-			Scene scene2 = new Scene(winPlayAgain,400,363);
+			Scene scene2 = new Scene(winPlayAgain,800,800);
 			scene2.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 			winPlayAgain.setId("Vader");
 			Button btn1 = new Button("Play Again?");
 			Button btn2 = new Button("Quit");
-			btn1.setTranslateX(280);
-			btn1.setTranslateY(325);
-			btn2.setTranslateX(25);
-			btn2.setTranslateY(325); 
+			btn1.setTranslateX(375);
+			btn1.setTranslateY(750);
+			btn2.setTranslateX(310);
+			btn2.setTranslateY(750); 
 			winPlayAgain.getChildren().addAll(btn1,btn2);
 			
 			/* 
 			 * Land, play again or quit scene setup. Initialization located in AnimationTimer.
 			 */
 			Pane landPlayAgain = new Pane();
-			Scene scene3 = new Scene(landPlayAgain,500,206);
+			Scene scene3 = new Scene(landPlayAgain,800,800);
 			scene3.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 			landPlayAgain.setId("Finn");
 			Button btn3 = new Button("Play Again?");
 			Button btn4 = new Button("Quit");
-			btn3.setTranslateX(400);
-			btn3.setTranslateY(175);
-			btn4.setTranslateX(15);
-			btn4.setTranslateY(175); 
+			btn3.setTranslateX(375);
+			btn3.setTranslateY(750);
+			btn4.setTranslateX(310);
+			btn4.setTranslateY(750); 
 			landPlayAgain.getChildren().addAll(btn3,btn4);
 			/* 
 			 * Crash, play again or quit scene setup. Initialization located in AnimationTimer.
 			 */
 			Pane crashPlayAgain = new Pane();
-			Scene scene4 = new Scene(crashPlayAgain,360,240);
+			Scene scene4 = new Scene(crashPlayAgain,800,800);
 			scene4.getStylesheets().add(getClass().getResource("style.css").toExternalForm());
 			crashPlayAgain.setId("Luke");
 			Button btn5 = new Button("Play Again?");
 			Button btn6 = new Button("Quit");
-			btn5.setTranslateX(270);
-			btn5.setTranslateY(210);
-			btn6.setTranslateX(0);
-			btn6.setTranslateY(210); 
+			btn5.setTranslateX(375);
+			btn5.setTranslateY(750);
+			btn6.setTranslateX(310);
+			btn6.setTranslateY(750); 
 			crashPlayAgain.getChildren().addAll(btn5,btn6);
 	
 	
@@ -217,7 +204,7 @@ void startGame(Stage stage){
         	l2.setText("Velocity: "+ lander.getVelocity());
         	l3.setText("Thrust %: "+ lander.getThrust());
         	l4.setText("Direction Angle: "+ lander.getDirectionAngle());
-        	l5.setText("Time Elapsed: "+lTime.getTime()/1000 + "s");
+        	l5.setText("Time Elapsed: "+lTime.getTime()/1000);
         	l6.setText("Height: " + lander.getHeight());
         	
         	lander.updateLocation(lander.getX(), lander.getY(), lander.getDirectionAngle());
@@ -225,7 +212,7 @@ void startGame(Stage stage){
         	lander.thrust(lander.getThrust());
         	float xCheck = lander.getX();
         	
-        	if(lander.getY()>650){ //Hits the Ground
+if(lander.getY()>650){ //Hits the Ground
         		
         		if((lander.getDirectionAngle() < 20 || lander.getDirectionAngle() > 345) && lander.getVelocity()<4){//Check to see if it Crashed (check Velocity and angles)
         			System.out.println(targetLocation);
@@ -256,9 +243,9 @@ void startGame(Stage stage){
     };
    gameLoop.start();
    
+   
    btn1.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
-	   
 	});
    btn2.setOnAction((event) -> {
 	    System.out.println("Quit");
@@ -268,7 +255,6 @@ void startGame(Stage stage){
 	});
    btn3.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
-
 	});
    btn4.setOnAction((event) -> {
 	    System.out.println("Quit");
@@ -278,7 +264,6 @@ void startGame(Stage stage){
 	});
    btn5.setOnAction((event) -> {
 	   restart(stage, gameLoop, lander);
-
 	});
    btn6.setOnAction((event) -> {
 	    System.out.println("Quit");
@@ -286,4 +271,24 @@ void startGame(Stage stage){
 	    System.exit(0);
 
 	});
-}}
+
+   pause.setOnAction((event) -> {
+	    System.out.println("Pause");
+	    if(pauseCheck == 0){
+	    	gameLoop.stop();
+	    	pauseCheck++;
+	    	tempLanderTime = lander.accTimer.getTime();
+	    	tempGameTime = lTime.getTime();
+	    	
+	    }
+	    else {
+	    	lander.accTimer.setTime(tempLanderTime);
+	    	lTime.setTime(tempGameTime);
+	    	gameLoop.start();
+	    	pauseCheck--;
+	    }
+	    
+	});
+}
+	
+}

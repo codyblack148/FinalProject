@@ -26,7 +26,7 @@ public class MoonLander{
 	Pane layer;
 	float timeAcc;
 	float timeVel;
-	private landerTimer accTimer = new landerTimer(1,1);
+	public landerTimer accTimer = new landerTimer(1,1);
 	
 	
 	public MoonLander(Image image, Pane layer){
